@@ -1,15 +1,15 @@
-var searchInput = document.getElementById('input');
+var searchInput = document.getElementById("input");
 var displaySearchList = document.getElementsByClassName('favorite')
 
 const apikey = '239474ee';
 const url = `https://www.omdbapi.com/?i=tt3896198&apikey=239474ee`;
 
 
-fetch('http://www.omdbapi.com/?i=tt3896198&apikey=239474ee')
+fetch(url)
     .then(res => res.json())
     .then(data => console.log(data))
 
-searchInput.addEventListener('input', findMovies);
+searchInput.addEventListener("input", findMovies);
 
 async function singleMovie() {
     var urlQueryParams = new URLSearchParams(window.location.search);
@@ -63,15 +63,17 @@ async function singleMovie() {
 async function addTofavorites(id) {
     console.log("fav-item", id)
 
-    localStorage.setItem(Math.random().toString(36).slice(2, 7), id);
+    localStorage.setItem(Math.random().toString(36).slice(2, 7), 
+    `https://www.omdbapi.com/?i=tt3896198&apikey=239474ee`);
     alert('Movie added to Watchlist')
 }
 
 async function removeFromFavorites(id) {
     console.log(id);
-    for (i in localStorage){
-        if (localStorage [i] = id) {
-            localStorage.removeItem(i)
+    for (let i =0; i < localStorage.length; i++){
+        let key = localStorage.key(i)
+        if (localStorage.getItem(key) === id) {
+            localStorage.removeItem(key)
             break;
         }
 }
@@ -116,31 +118,36 @@ async function displayMovieList(movies) {
 }
 
 async function findMovies() {
-    const url = `https://www.omdbapi.com/?s=${(searchInput.value).trim()}&apikey=${apikey}&`;
-    const res = await fetch(`${url}`);
-    const data = await res.json();
+    if (searchInput.value.length > 1) {
+        const url = `https://www.omdbapi.com/?s=${(searchInput.value).trim()}&apikey=${apikey}&`;
+        const res = await fetch(`${url}`);
+        const data = await res.json();
 
     if (data.search) {
         displayMovieList(data.search)
     }
+  }
 }
 
 async function favoriteMovieLoader() {
     var output = '';
-    for(i in localStorage) {
-        var id = localStorage.getItem(i);
+    for(let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i)
+            let id = localStorage.getItem(key)
+
             if (id != null) {
             const url =  `https://www.omdbapi.com/?i=${id}&apikey=${apikey}&`
             const res = await fetch(`${url}`)
             const data = await res.json();
             console.log(data)
-            
+
             var img = '';
             if (data.poster) {
                 img = data.Poster
             }
             else {img + data.Title}
-            var id = data.imdbID;
+            let id = data.imdbID;
+
             output += `
             <div class="fav-poster">
                 <a href="movie.html?id=${id}"><img src=${img} alt="Favourites Poster"></a>
