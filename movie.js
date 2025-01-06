@@ -1,27 +1,32 @@
-var searchInput = document.getElementById("input");
-var displaySearchList = document.getElementsByClassName('favorite')
+var searchInput = document.getElementById("input")
+var displaySearchList = document.getElementsByClassName("favorite");
 
-const apikey = '239474ee';
-const url = `https://www.omdbapi.com/?i=tt3896198&apikey=239474ee`;
-
+const apikey = "239474ee";
+const searchBar = document.getElementsByClassName("search__bar").value
+const url = `https://www.omdbapi.com/?apikey=${apikey}&s=${searchBar}`;
 
 fetch(url)
-    .then(res => res.json())
-    .then(data => console.log(data))
+  .then((res) => res.json())
+  .then((data) => console.log(data));
 
 searchInput.addEventListener("input", findMovies);
 
 async function singleMovie() {
-    var urlQueryParams = new URLSearchParams(window.location.search);
-    var id = urlQueryParams.get('id');
-    console.log(id);
-    const url = `https://www.omdbapi.com/?i=${id}&apikey=${apikey}&`;
-    const res = await fetch(`${url}`);
-    const data = await res.json();
-    console.log(data);
-    console.log(url);
+  var urlQueryParams = new URLSearchParams(window.location.search);
+  var id = urlQueryParams.get("id");
 
-    var output = `  
+  if (!id) {
+    console.error("No movie ID found in URL");
+    return;
+  }
+
+  const movieUrl = `https://www.omdbapi.com/?apikey=${apikey}&s=${id}`;
+  const res = await fetch(movieUrl);
+  const data = await res.json();
+  console.log(data);
+  console.log(movieUrl);
+
+  var output = `  
 
     <div class="movie-poster">
         <img src=${data.Poster} alt="Movie Poster">
@@ -54,47 +59,38 @@ async function singleMovie() {
                 &thinsp; ${data.Awards}
             </p>
         </div> 
-    `
-  
-    document.querySelector('.movie-container').innerHTML = output
+    `;
 
+  document.querySelector(".movie-container").innerHTML = output;
 }
 
 async function addTofavorites(id) {
-    console.log("fav-item", id)
+  console.log("fav-item", id);
 
-    localStorage.setItem(Math.random().toString(36).slice(2, 7), 
-    `https://www.omdbapi.com/?i=tt3896198&apikey=239474ee`);
-    alert('Movie added to Watchlist')
+  localStorage.setItem(Math.random().toString(36).slice(2, 7), id);
+  alert("Movie added to Watchlist");
 }
 
 async function removeFromFavorites(id) {
-    console.log(id);
-    for (let i =0; i < localStorage.length; i++){
-        let key = localStorage.key(i)
-        if (localStorage.getItem(key) === id) {
-            localStorage.removeItem(key)
-            break;
-        }
-}
-    alert ('Movie removed to Watchlist');
-    window.location.replace('favorite.html')
+  for (let i = 0; i < localStorage.length; i++) {
+    let key = localStorage.key(i);
+    if (localStorage.getItem(key) === id) {
+      localStorage.removeItem(key);
+      break;
+    }
+  }
+  alert("Movie removed to Watchlist");
+  window.location.replace("favorite.html");
 }
 
 async function displayMovieList(movies) {
-    var output = '';
+  var output = "";
 
-    for (i of movies) {
-        var img = '';
-        if (i.poster != 'N/A') {
-            img = i.Poster
-        }
-        else {
-            img = 'img/blank-poster.webp';
-        }
-        var id = i.imdbID;
+  for (let i of movies) {
+    let img = i.Poster !== "N/A" ? i.Poster : "img/blank-poster.webp";
+    let id = i.imbID;
 
-        output += `
+    output += `
         <div class="fav-item">
             <div class="fav-poster">
             <a href="movie.html?id=${id}"><img src=${img} alt="Favourites Poster"></a>
@@ -111,44 +107,39 @@ async function displayMovieList(movies) {
                 </div>
             </div>
         </div>
-        `
-    }
-    document.querySelector('.favorite').innerHTML = output;
-    console.log("here is movie list . .", movies);
+        `;
+  }
+  document.querySelector(".favorite").innerHTML = output;
+  console.log("here is movie list . .", movies);
 }
 
 async function findMovies() {
-    if (searchInput.value.length > 1) {
-        const url = `https://www.omdbapi.com/?s=${(searchInput.value).trim()}&apikey=${apikey}&`;
-        const res = await fetch(`${url}`);
-        const data = await res.json();
+  if (searchInput.value.length > 1) {
+    const url = `https://www.omdbapi.com/?apikey=${apikey}&s=${searchInput.value.trim()}`;
+    const res = await fetch(url);
+    const data = await res.json();
 
     if (data.search) {
-        displayMovieList(data.search)
+      displayMovieList(data.search);
     }
   }
 }
 
 async function favoriteMovieLoader() {
-    var output = '';
-    for(let i = 0; i < localStorage.length; i++) {
-            let key = localStorage.key(i)
-            let id = localStorage.getItem(key)
+  var output = "";
+  for (let i = 0; i < localStorage.length; i++) {
+    let key = localStorage.key(i);
+    let id = localStorage.getItem(key);
 
-            if (id != null) {
-            const url =  `https://www.omdbapi.com/?i=${id}&apikey=${apikey}&`
-            const res = await fetch(`${url}`)
-            const data = await res.json();
-            console.log(data)
+    if (id != null) {
+      const movieUrl = `https://www.omdbapi.com/?apikey=${apikey}&s=${id}`;
+      const res = await fetch(movieUrl);
+      const data = await res.json();
 
-            var img = '';
-            if (data.poster) {
-                img = data.Poster
-            }
-            else {img + data.Title}
-            let id = data.imdbID;
+      let img = data.Poster ? data.Poster : "img/blank-poster.webb";
+      let id = data.imdbID;
 
-            output += `
+      output += `
             <div class="fav-poster">
                 <a href="movie.html?id=${id}"><img src=${img} alt="Favourites Poster"></a>
             </div>
@@ -167,6 +158,6 @@ async function favoriteMovieLoader() {
         </div>
         `;
     }
-}
-document.querySelector('.favorite').innerHTML = output;
+  }
+  document.querySelector(".favorite").innerHTML = output;
 }
