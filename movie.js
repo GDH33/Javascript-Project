@@ -1,5 +1,5 @@
-var searchInput = document.getElementById("input");
-var displaySearchList = document.getElementsByClassName("favorite");
+const searchInput = document.getElementById("input");
+const displaySearchList = document.getElementsByClassName("favorite");
 
 const apikey = "239474ee";
 const searchBar = document.getElementsByClassName("search__bar").value;
@@ -9,7 +9,7 @@ fetch(url)
   .then((res) => res.json())
   .then((data) => console.log(data));
 
-searchInput.addEventListener("input", findMovies);
+searchInput?.addEventListener("input", findMovies);
 
 async function singleMovie() {
   var urlQueryParams = new URLSearchParams(window.location.search);
@@ -68,20 +68,30 @@ async function addTofavorites(id) {
   console.log("fav-item", id);
 
   localStorage.setItem(Math.random().toString(36).slice(2, 7), id);
-  alert("Movie added to Watchlist");
+  alert("Movie added to favorites");
 }
 
 async function removeFromFavorites(id) {
-  for (let i = 0; i < localStorage.length; i++) {
-    let key = localStorage.key(i);
-    if (localStorage.getItem(key) === id) {
-      localStorage.removeItem(key);
-      break;
+    if (!id) {
+      alert("Invalid movie ID");
+      return;
+    }
+  
+    try {
+      const key = Object.keys(localStorage).find(key => localStorage.getItem(key) === id);
+      
+      if (key) {
+        localStorage.removeItem(key);
+        alert("Movie removed from favorites");
+        window.location.replace("favorite.html");
+      } else {
+        alert("Movie not found in favorites");
+      }
+    } catch (error) {
+      console.error("Error removing movie:", error);
+      alert("Error removing movie from favorites");
     }
   }
-  alert("Movie removed to Watchlist");
-  window.location.replace("favorite.html");
-}
 
 async function displayMovieList(movies) {
   console.log("Movies received", movies);
@@ -144,39 +154,63 @@ async function findMovies() {
 }
 
 async function favoriteMovieLoader() {
-  var output = "";
-  for (let i = 0; i < localStorage.length; i++) {
-    let key = localStorage.key(i);
-    let id = localStorage.getItem(key);
+  const favoriteContainer = document.querySelector(".favorite");
+  favoriteContainer.innerHTML = '<div class="loading">Loading favorites...</div>';
+  
+  try {
+    let output = "";
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const id = localStorage.getItem(key);
 
-    if (id != null) {
-      const movieUrl = `https://www.omdbapi.com/?apikey=${apikey}&i=${id}`;
-      const res = await fetch(movieUrl);
-      const data = await res.json();
+      if (id) {
+        const movieUrl = `https://www.omdbapi.com/?apikey=${apikey}&i=${id}`;
+        const res = await fetch(movieUrl);
+        const data = await res.json();
 
-      let img = data.Poster ? data.Poster : "img/blank-poster.webb";
-      let id = data.imdbID;
+        if (data.Response === "False") {
+          continue;
+        }
 
-      output += `
+        const img = data.Poster || "img/blank-poster.webp";
+        const movieId = data.imdbID;
+
+        output += `
+          <div class="fav-item">
             <div class="fav-poster">
-                <a href="movie.html?id=${id}"><img src=${img} alt="Favourites Poster"></a>
+              <a href="movie.html?id=${movieId}"><img src="${img}" alt="Favourites Poster"></a>
             </div>
             <div class="fav-details">
-                <div class="fav-details-box">
-                    <div>
-                        <p class="fav-movie-name">${data.Title}</p>
-                        <p class="fav-movie-rating">${data.Year} &middot; <span
-                                style="font-size: 15px; font-weight: 600;">${data.imdbRating}</span>/10</p>
-                    </div>
-                    <div style="color: maroon">
-                        <i class="fa-solid fa-trash" style="cursor:pointer;" onClick=removeFromfavorites('${id}')></i>
-                    </div>
+              <div class="fav-details-box">
+                <div>
+                  <p class="fav-movie-name">${data.Title}</p>
+                  <p class="fav-movie-rating">${data.Year} &middot; <span
+                    style="font-size: 15px; font-weight: 600;">${data.imdbRating}</span>/10</p>
                 </div>
+                <div style="color: maroon">
+                  <i class="fa-solid fa-trash" style="cursor:pointer;" onclick="removeFromFavorites('${movieId}')"></i>
+                </div>
+              </div>
             </div>
-        </div>
+          </div>
         `;
+      }
     }
+    favoriteContainer.innerHTML = output;
+  } catch (error) {
+    console.error("Error loading favorite movies:", error);
+    favoriteContainer.innerHTML = "<p>Error loading favorite movies</p>";
   }
-  document.querySelector(".favorite").innerHTML = output;
 }
 
+function openMenu() {
+    document.body.classList += " menu--open";
+}
+
+function closeMenu() {
+    document.body.classList.remove('menu--open');
+}
+
+function linkToHome(){
+    location.href = "index.html";
+}

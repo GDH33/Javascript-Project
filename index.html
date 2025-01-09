@@ -17,15 +17,31 @@
                         <h1 class="name">FOVIE</h1>
                     </div>
                     <div class="links">
-                        <a href="#" class="link">HOME</a>
-                        <a href="#" class="link">FIND MOVIE</a>
-                        <a href="#" class="link">FAVORITES</a>
-                        <a href="#" class="link">
+                        <a href="http://127.0.0.1:5500/index.html" class="link">HOME</a>
+                        <a href="http://127.0.0.1:5500/movie.html" class="link">MOVIE INFO</a>
+                        <a href="http://127.0.0.1:5500/favorite.html" class="link">FAVORITES</a>
+                        <a href="(link to portfolio)" class="link">
                             <button class="btn">CONTACT</button>
                         </a>
                     </div>
+                    <button class="btn__menu" onclick="openMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 </div>
             </nav>
+            <div class="modal">
+                <button class="btn__menu btn__menu--close" onclick="closeMenu()">
+                  <i class="fas fa-times"></i>
+                </button>
+                <div class="modal__links">
+                    <a href="http://127.0.0.1:5500/index.html" class="modal__link">HOME</a>
+                    <a href="http://127.0.0.1:5500/movie.html" class="modal__link">MOVIE INFO</a>
+                    <a href="http://127.0.0.1:5500/favorite.html" class="modal__link">FAVORITES</a>
+                    <a href="(link to portfolio)" class="modal__link">
+                        <button class="btn">CONTACT</button>
+                    </a>
+                </div>
+              </div>
                 <section id="landing-page">
                     <div class="contianer">
                         <div class="row">
@@ -48,7 +64,7 @@
                                 </input>    
                             </div>
                             <div class="main">
-                                <div class="fav-container">
+                                <div class="fav-container favorite">
                                 </div>
                                 <div class="start-exploring">
                                     <i class="fa-solid fa-film fa-6x red"></i><br>
