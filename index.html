@@ -1,82 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="./style.css">
-    <script src="https://kit.fontawesome.com/a741c0063c.js" crossorigin="anonymous"></script>
-</head>
-<body  >
+    <link rel="stylesheet" href="./style.css" />
+    <script
+      src="https://kit.fontawesome.com/a741c0063c.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
     <div>
-        <div>
-            <nav>
-                <div class="nav">
-                    <div class="logo">
-                        <i class="fa-solid fa-film logo__img"></i>
-                        <h1 class="name">FOVIE</h1>
-                    </div>
-                    <div class="links">
-                        <a href="http://127.0.0.1:5500/index.html" class="link">HOME</a>
-                        <a href="http://127.0.0.1:5500/movie.html" class="link">MOVIE INFO</a>
-                        <a href="http://127.0.0.1:5500/favorite.html" class="link">FAVORITES</a>
-                        <a href="(link to portfolio)" class="link">
-                            <button class="btn">CONTACT</button>
-                        </a>
-                    </div>
-                    <button class="btn__menu" onclick="openMenu()">
-                        <i class="fas fa-bars"></i>
-                    </button>
+      <div>
+        <nav>
+          <div class="nav">
+            <div class="logo">
+              <i class="fa-solid fa-film logo__img"></i>
+              <h1 class="name">FOVIE</h1>
+            </div>
+            <div class="links">
+              <a href="http://127.0.0.1:5500/index.html" class="link">HOME</a>
+              <a href="http://127.0.0.1:5500/movie.html" class="link"
+                >MOVIE INFO</a
+              >
+              <a href="http://127.0.0.1:5500/favorite.html" class="link"
+                >FAVORITES</a
+              >
+              <a href="(link to portfolio)" class="link">
+                <button class="btn">CONTACT</button>
+              </a>
+            </div>
+            <button class="btn__menu" onclick="openMenu()">
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
+        </nav>
+        <div class="modal">
+          <button class="btn__menu btn__menu--close" onclick="closeMenu()">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="modal__links">
+            <a href="http://127.0.0.1:5500/index.html" class="modal__link"
+              >HOME</a
+            >
+            <a href="http://127.0.0.1:5500/movie.html" class="modal__link"
+              >MOVIE INFO</a
+            >
+            <a href="http://127.0.0.1:5500/favorite.html" class="modal__link"
+              >FAVORITES</a
+            >
+            <a href="(link to portfolio)" class="modal__link">
+              <button class="btn">CONTACT</button>
+            </a>
+          </div>
+        </div>
+        <section id="landing-page">
+          <div class="contianer">
+            <div class="row">
+              <div class="landing">
+                <div class="landing__discription">
+                  <h1 class="title__discription">
+                    Where the premier movies you crave are
+                  </h1>
                 </div>
-            </nav>
-            <div class="modal">
-                <button class="btn__menu btn__menu--close" onclick="closeMenu()">
-                  <i class="fas fa-times"></i>
-                </button>
-                <div class="modal__links">
-                    <a href="http://127.0.0.1:5500/index.html" class="modal__link">HOME</a>
-                    <a href="http://127.0.0.1:5500/movie.html" class="modal__link">MOVIE INFO</a>
-                    <a href="http://127.0.0.1:5500/favorite.html" class="modal__link">FAVORITES</a>
-                    <a href="(link to portfolio)" class="modal__link">
-                        <button class="btn">CONTACT</button>
-                    </a>
+                <div class="sub-title">
+                  <h2 class="sub-title__description">
+                    Find your next movie night with
+                    <span class="aqua">FOVIE</span>
+                  </h2>
+                </div>
+                <div class="search-box">
+                  <input
+                    id="input"
+                    type="search"
+                    placeholder="Movies"
+                    class="search__bar"
+                  />
+                  <button class="btn not-loading click" type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                  <div class="range">
+                    <div class="slider__value">
+                      <span class="span__value">A-Z</span>
+                    </div>
+                    <div class="field">
+                      <div class="a__value value">A</div>
+                      <input class="range__input" type="range" min="A" max="Z" value="1" />
+                      <div class="z__value value">Z</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="main">
+                  <div class="fav-container favorite"></div>
+                  <div class="start-exploring">
+                    <i class="fa-solid fa-film fa-6x red"></i><br />
+                    <span class="red">Start Exploring!</span>
+                  </div>
                 </div>
               </div>
-                <section id="landing-page">
-                    <div class="contianer">
-                        <div class="row">
-                            <div class="landing">
-                                <div class="landing__discription">
-                                    <h1 class="title__discription">
-                                        Where the premier movies you crave are
-                                    </h1>
-                                </div> 
-                                <div class="sub-title">
-                                    <h2 class="sub-title__description">
-                                        Find your next movie night with <span class="aqua">FOVIE</span>
-                                    </h2>
-                                </div>
-                                <div class="search-box">
-                                    <input id="input" type="search" placeholder="Movies" class="search__bar">
-                                    <button class="btn not-loading" type="submit">
-                                        <i class="fa-solid fa-magnifying-glass"></i>
-                                    </button>
-                                </input>    
-                            </div>
-                            <div class="main">
-                                <div class="fav-container favorite">
-                                </div>
-                                <div class="start-exploring">
-                                    <i class="fa-solid fa-film fa-6x red"></i><br>
-                                    <span class="red">Start Exploring!</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </body>
-<script src="movie.js"></script>
+  <script src="movie.js"></script>
 </html>

@@ -1,13 +1,17 @@
 const searchInput = document.getElementById("input");
 const displaySearchList = document.getElementsByClassName("favorite");
-
+const sliderValue = document.querySelector(".span__value");
+const inputSlider = document.querySelector(".range__input");
+const alphabet = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
 const apikey = "239474ee";
-const searchBar = document.getElementsByClassName("search__bar").value;
-const url = `https://www.omdbapi.com/?apikey=${apikey}&s=${searchBar}`;
 
-fetch(url)
-  .then((res) => res.json())
-  .then((data) => console.log(data));
+
+//const searchBar = document.getElementsByClassName("search__bar").value;
+//const url = `https://www.omdbapi.com/?apikey=${apikey}&s=${searchBar}`;
+
+//fetch(url)
+//  .then((res) => res.json())
+//  .then((data) => console.log(data));
 
 searchInput?.addEventListener("input", findMovies);
 
@@ -72,26 +76,28 @@ async function addTofavorites(id) {
 }
 
 async function removeFromFavorites(id) {
-    if (!id) {
-      alert("Invalid movie ID");
-      return;
-    }
-  
-    try {
-      const key = Object.keys(localStorage).find(key => localStorage.getItem(key) === id);
-      
-      if (key) {
-        localStorage.removeItem(key);
-        alert("Movie removed from favorites");
-        window.location.replace("favorite.html");
-      } else {
-        alert("Movie not found in favorites");
-      }
-    } catch (error) {
-      console.error("Error removing movie:", error);
-      alert("Error removing movie from favorites");
-    }
+  if (!id) {
+    alert("Invalid movie ID");
+    return;
   }
+
+  try {
+    const key = Object.keys(localStorage).find(
+      (key) => localStorage.getItem(key) === id
+    );
+
+    if (key) {
+      localStorage.removeItem(key);
+      alert("Movie removed from favorites");
+      window.location.replace("favorite.html");
+    } else {
+      alert("Movie not found in favorites");
+    }
+  } catch (error) {
+    console.error("Error removing movie:", error);
+    alert("Error removing movie from favorites");
+  }
+}
 
 async function displayMovieList(movies) {
   console.log("Movies received", movies);
@@ -129,34 +135,91 @@ async function displayMovieList(movies) {
   }
   document.querySelector(".fav-container").innerHTML = output;
 }
-
 async function findMovies() {
-  if (searchInput.value.length > 0) {
+    const searchValue = searchInput.value.trim().toUpperCase();
+    const searchContainer = document.querySelector(".fav-container");
+    const loading = document.querySelector(".loading");
+    
+    if (!searchValue) {
+        searchContainer.innerHTML = "";
+        loading.classList.remove("loading--visible");
+        return;
+    }
+
     try {
-      const url = `https://www.omdbapi.com/?apikey=${apikey}&s=${searchInput.value.trim()}`;
-      const res = await fetch(url);
-      const data = await res.json();
+        loading.classList.add("loading--visible");
+        searchContainer.innerHTML = '<p>Searching...</p>';
 
-      console.log("API Response:", data);
-
-      if (data.Search && Array.isArray(data.Search)) {
-        displayMovieList(data.Search);
-      } else {
-        document.querySelector(".fav-container").innerHTML =
-          "<p>No movies found</p>";
-      }
+        if (searchValue.length === 1) {
+            const movies = await searchMoviesByLetter(searchValue);
+            if (movies.length > 0) {
+                await displayMovieList(movies);
+            } else {
+                searchContainer.innerHTML = "<p>No movies found starting with that letter</p>";
+            }
+        } else {
+            const url = `https://www.omdbapi.com/?apikey=${apikey}&s=${searchValue}*&type=movie`;
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.Search && Array.isArray(data.Search)) {
+                await displayMovieList(data.Search);
+            } else {
+                searchContainer.innerHTML = "<p>No movies found</p>";
+            }
+        }
     } catch (error) {
-      console.error("Error fetching movies:", error);
-      document.querySelector(".fav-container").innerHTML =
-        "<p>Error fetching movies</p>";
+        console.error("Search error:", error);
+        searchContainer.innerHTML = "<p>Error searching movies</p>";
+    } finally {
+        loading.classList.remove("loading--visible");
+    }
+}
+async function searchMoviesByLetter(letter) {
+    try {
+        // Construct URL with proper encoding and wildcards
+        const url = `https://www.omdbapi.com/?apikey=${apikey}&s=${encodeURIComponent(letter)}&type=movie`;
+        console.log('Search URL:', url);
+
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('API Response:', data);
+
+        if (!data.Search || !Array.isArray(data.Search)) {
+            console.log('No search results found');
+            return [];
+        }
+
+        // Filter movies starting with the letter
+        const filteredMovies = data.Search.filter(movie => 
+            movie.Title.toUpperCase().startsWith(letter)
+        );
+        console.log('Filtered movies:', filteredMovies);
+
+        return filteredMovies;
+    } catch (error) {
+        console.error("Letter search error:", error);
+        return [];
+    }
+    
+}
+async function displayResults(movies, container) {
+    if (movies.length > 0) {
+      await displayMovieList(movies);
+    } else {
+      container.innerHTML = "<p>No movies found starting with that letter</p>";
     }
   }
-}
-
+  
+  function handleSearchError(error, container) {
+    console.error("Search error:", error);
+    container.innerHTML = "<p>Error searching movies</p>";
+  }
 async function favoriteMovieLoader() {
   const favoriteContainer = document.querySelector(".favorite");
-  favoriteContainer.innerHTML = '<div class="loading">Loading favorites...</div>';
-  
+  favoriteContainer.innerHTML =
+    '<div class="loading">Loading favorites...</div>';
+
   try {
     let output = "";
     for (let i = 0; i < localStorage.length; i++) {
@@ -204,13 +267,82 @@ async function favoriteMovieLoader() {
 }
 
 function openMenu() {
-    document.body.classList += " menu--open";
+  document.body.classList += " menu--open";
 }
 
 function closeMenu() {
-    document.body.classList.remove('menu--open');
+  document.body.classList.remove("menu--open");
 }
 
-function linkToHome(){
-    location.href = "index.html";
+function linkToHome() {
+  location.href = "index.html";
 }
+
+inputSlider.min = 0;
+inputSlider.max = 25;
+inputSlider.step = 1;  
+
+inputSlider.oninput = () => {
+  const value = inputSlider.value;
+  const letter = alphabet[value];
+  sliderValue.textContent = letter;
+  sliderValue.style.left = `${(value / 25) * 100}%`;
+  sliderValue.classList.add("show");
+};
+//inputSlider.onchange = async () => {
+//    const letter = alphabet[inputSlider.value];
+//    searchInput.value = letter;
+//    await findMovies();
+//};
+
+inputSlider.onblur = () => {
+  sliderValue.classList.remove("show");
+};
+
+async function searchMoviesByLetter(letter) {
+    try {
+        const searchLetter = letter.toUpperCase();
+        // Add page and limit parameters
+        const url = `https://www.omdbapi.com/?apikey=${apikey}&s=${searchLetter}*&type=movie&page=1`;
+        console.log('Search URL:', url);
+
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('API Response:', data);
+
+        if (data.Response === "True" && Array.isArray(data.Search)) {
+            // Filter, sort, and limit to first 10
+            return data.Search
+                .filter(movie => movie.Title.charAt(0).toUpperCase() === searchLetter)
+                .sort((a, b) => a.Title.localeCompare(b.Title))
+                .slice(0, 10);
+        }
+        return [];
+    } catch (error) {
+        console.error("Search failed:", error);
+        return [];
+    }
+}
+
+inputSlider.onchange = async () => {
+    const letter = alphabet[inputSlider.value];
+    const searchContainer = document.querySelector(".fav-container");
+    
+    try {
+        searchInput.value = letter;
+        searchContainer.innerHTML = '<p>Searching...</p>';
+        
+        const movies = await searchMoviesByLetter(letter);
+        console.log(`Found ${movies?.length || 0} movies starting with ${letter}`);
+        
+        if (movies?.length > 0) {
+            await displayMovieList(movies);
+        } else {
+            searchContainer.innerHTML = `<p>No movies found starting with "${letter}"</p>`;
+        }
+    } catch (error) {
+        console.error(error);
+        searchContainer.innerHTML = '<p>Error searching movies</p>';
+    }
+};
+
